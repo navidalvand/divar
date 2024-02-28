@@ -1,8 +1,10 @@
 const express = require("express");
-const port = 3000;
+require("dotenv").config();
+const port = process.env.PORT;
 
 function main() {
   const app = express();
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+  require("./src/config/mongoose.config.js");
+  app.listen(port, () => console.log(`divar listening on port ${port}!`));
 }
 main();
