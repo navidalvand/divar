@@ -12,8 +12,8 @@ const swaggerConfig = (app) => {
     apis: [],
   });
 
-    const swagger = swaggerUi.setup(swaggerDocument);
-    app.use('/' , swaggerUi.serve , swagger)
+  const swagger = swaggerUi.setup(swaggerDocument);
+  app.use("/", swaggerUi.serve, swagger);
 };
 
 module.exports = {
