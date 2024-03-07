@@ -1,17 +1,22 @@
+const { AuthMessage } = require("./auth.messages");
 const { AuthService } = require("./auth.service");
-
+const autoBind = require("auto-bind");
 class AuthController {
   #service;
   constructor() {
+    autoBind(this);
     this.#service = AuthService;
   }
   async sendOtp(req, res, next) {
     try {
       const { phone } = req.body;
-      this.#service.sendOtp(phone);
+
+      const result = await this.#service.sendOtp(phone);
+      return {
+        message: AuthMessage.sendOtpSuccessfully,
+        result,
+      };
     } catch (err) {
-      new Error(`error in AuthController.sendOtp()`);
-      new Error(err);
       next(err);
     }
   }
