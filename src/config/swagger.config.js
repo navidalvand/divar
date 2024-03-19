@@ -9,7 +9,7 @@ const swaggerConfig = (app) => {
         version: 2.0,
       },
     },
-    apis: [],
+    apis: ["./src/modules/*/*.swagger.js"],
   });
 
   const swagger = swaggerUi.setup(swaggerDocument);
