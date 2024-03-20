@@ -12,41 +12,55 @@ class AuthService {
   }
 
   async sendOtp(phone) {
-      const user = await this.#model.findOne({ phone });
+    const user = await this.#model.findOne({ phone });
 
-      const now = new Date().getTime();
-      const code = randomInt(10000, 99999);
-      const twoMinuteMS = 1000 * 60 * 2;
-      const expiresIn = now + twoMinuteMS;
+    const now = new Date().getTime();
+    const code = randomInt(10000, 99999);
+    const twoMinuteMS = 1000 * 60 * 2;
+    const expiresIn = now + twoMinuteMS;
 
-      const otp = {
-        code,
-        expiresIn,
-      };
+    const otp = {
+      code,
+      expiresIn,
+    };
 
-      if (!user) {
-        const newUser = await this.#model.create({
-          phone,
-          otp,
-        });
-        return newUser;
-      }
+    if (!user) {
+      const newUser = await this.#model.create({
+        phone,
+        otp,
+      });
+      return newUser;
+    }
 
-      if (user.otp && user.otp.exiresIn > now)
-        throw new createError.BadRequest(AuthMessage.otpCodeNotExpired);
+    if (user?.otp?.expiresIn >= now)
+      throw createError.BadRequest(AuthMessage.otpCodeNotExpired);
 
-      user.otp = otp;
-      await user.save();
-      return user;
+    user.otp = otp;
+    await user.save();
+    return user;
   }
 
-  async checkOtp(phone, code) {}
+  async checkOtp(phone, code) {
+    const user = await this.checkExistsByPhone(phone);
+    const now = new Date().getTime();
+    if (user?.otp?.expiresIn <= now)
+      throw createError.Unauthorized(AuthMessage.otpCodeExpired);
+    if (user?.otp?.code !== code)
+      throw createError.Unauthorized(AuthMessage.wrongOTP);
+
+    if (!user.verifiedPhone) {
+      user.verifiedPhone = true;
+      await user.save();
+    }
+    
+    return user;
+  }
 
   async logOut() {}
 
   async checkExistsByPhone(phone) {
     const exist = await this.#model.findOne({ phone });
-    if (!exist) return new createError.NotFound(AuthMessage.notFound);
+    if (!exist) throw createError.NotFound(AuthMessage.notFound);
     return exist;
   }
 }
