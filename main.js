@@ -11,12 +11,15 @@ const {
   exceptionHandler,
 } = require("./src/common/exception/exception.handler.js");
 require("dotenv").config();
+const cookieParser = require("cookie-parser");
+
 const port = process.env.PORT;
 
 function main() {
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
   corsConfig(app);
   helmetConfig(app);
   morganConfig(app);

@@ -3,6 +3,8 @@ const { UserModel } = require("../user/user.model");
 const createError = require("http-errors");
 const { AuthMessage } = require("./auth.messages");
 const { randomInt } = require("crypto");
+const jwt = require("jsonwebtoken");
+const { getEnv } = require("../../common/utils/get-env");
 
 class AuthService {
   #model;
@@ -45,14 +47,14 @@ class AuthService {
     const now = new Date().getTime();
     if (user?.otp?.expiresIn <= now)
       throw createError.Unauthorized(AuthMessage.otpCodeExpired);
-    if (user?.otp?.code !== code)
+    if (user?.otp?.code !== +code)
       throw createError.Unauthorized(AuthMessage.wrongOTP);
 
     if (!user.verifiedPhone) {
       user.verifiedPhone = true;
       await user.save();
     }
-    
+
     return user;
   }
 
@@ -62,6 +64,11 @@ class AuthService {
     const exist = await this.#model.findOne({ phone });
     if (!exist) throw createError.NotFound(AuthMessage.notFound);
     return exist;
+  }
+
+  signToken(payload) {
+    const secretKey = getEnv("JWT_SECRET_KEY");
+    return jwt.sign(payload, secretKey, { expiresIn: "1d" });
   }
 }
 

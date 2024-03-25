@@ -37,6 +37,10 @@ class AuthController {
 
       const user = await this.#service.checkOtp(phone, code);
 
+      const token = this.#service.signToken({ phone, id: user._id });
+
+      res.cookie("token", token);
+
       return res.send({
         message: AuthMessage.loginSuccessfully,
         user,
