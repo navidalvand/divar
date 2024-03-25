@@ -39,7 +39,10 @@ class AuthController {
 
       const token = this.#service.signToken({ phone, id: user._id });
 
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+      });
 
       return res.send({
         message: AuthMessage.loginSuccessfully,
