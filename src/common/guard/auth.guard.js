@@ -11,8 +11,7 @@ class AuthGuard {
         throw createHttpError.Unauthorized("please try to login again");
       const secret = getEnv("JWT_SECRET_KEY");
       const data = jwt.verify(token, secret);
-      if (!data)
-        throw createHttpError.Unauthorized("please try to login again");
+      if (!data) throw createHttpError.Unauthorized("invalid token");
       const user = await UserModel.findById(data.id, { otp: 0 }).lean();
       if (!user) throw createHttpError.NotFound("user not found");
       req.user = user;
