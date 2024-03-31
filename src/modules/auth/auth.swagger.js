@@ -79,3 +79,16 @@
  *              200:
  *                  description: success
  */
+
+/**
+ * @swagger
+ * paths:
+ *  /auth/logout:
+ *      post:
+ *          summary: logout
+ *          tags : [auth]
+ *          description: log out api just clears your token cookie
+ *          responses:
+ *              200:
+ *                  description: success
+ */

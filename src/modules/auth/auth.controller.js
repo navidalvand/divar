@@ -57,6 +57,8 @@ class AuthController {
 
   async logOut(req, res, next) {
     try {
+      res.clearCookie("token");
+      res.send("ok");
     } catch (err) {
       next(err);
     }

@@ -58,7 +58,6 @@ class AuthService {
     return user;
   }
 
-  async logOut() {}
 
   async checkExistsByPhone(phone) {
     const exist = await this.#model.findOne({ phone });
