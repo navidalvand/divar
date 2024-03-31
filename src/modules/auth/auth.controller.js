@@ -12,7 +12,7 @@ class AuthController {
     try {
       const { phone } = req.body;
 
-      if (!phone) throw new createHttpError.BadRequest("phone is required");
+      if (!phone) throw createHttpError.BadRequest("phone is required");
 
       const result = await this.#service.sendOtp(phone);
 
@@ -32,16 +32,18 @@ class AuthController {
     try {
       const { phone, code } = req.body;
 
-      if (!phone) throw new createHttpError.BadRequest("phone is required");
-      if (!code) throw new createHttpError.BadRequest("code is required");
+      if (!phone) throw createHttpError.BadRequest("phone is required");
+      if (!code) throw createHttpError.BadRequest("code is required");
 
       const user = await this.#service.checkOtp(phone, code);
 
       const token = this.#service.signToken({ phone, id: user._id });
+      const oneDay = 1000 * 60 * 60 * 24;
 
       res.cookie("token", token, {
         httpOnly: true,
         secure: false,
+        expiresIn: oneDay,
       });
 
       return res.send({
